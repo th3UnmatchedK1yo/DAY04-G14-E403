@@ -116,3 +116,24 @@ tools:
         max_pages: {type: integer, default: 5, description: "Số trang"}
         max_chars: {type: integer, default: 8000, description: "Số ký tự"}
       required: [arxiv_url]
+
+  - name: currency
+    description: "Chuyển đổi tiền tệ giữa các mệnh giá USD, EUR, GBP, JPY, VND, SGD."
+    parameters:
+      type: object
+      properties:
+        amount: {type: number, description: "Số tiền cần đổi"}
+        from_currency: {type: string, description: "Mã tiền tệ gốc (VD: USD, VND)"}
+        to_currency: {type: string, description: "Mã tiền tệ đích (VD: VND, EUR)"}
+      required: [amount, from_currency, to_currency]
+
+  - name: player_info
+    description: "Tra cứu thông tin chi tiết về cầu thủ bóng đá (CLB, quốc tịch, vị trí, danh hiệu, chỉ số)."
+    parameters:
+      type: object
+      properties:
+        player_name: {type: string, description: "Tên cầu thủ (VD: Messi, Ronaldo, Mbappe, Haaland)"}
+        query_type: {type: string, enum: [general, stats, trophies, club], default: "general", description: "Loại thông tin cần tra cứu"}
+      required: [player_name]
+
+

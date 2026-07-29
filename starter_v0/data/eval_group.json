@@ -1,7 +1,239 @@
 {
   "dataset_id": "day04_v2_research_group",
   "dataset_role": "group",
-  "description": "Template để NHÓM tự viết đúng 10 case: 5 single-turn dùng query và 5 multi-turn dùng turns. Mỗi case cần: id, phase='B', failure_type (thuộc allowed_failure_types), expect (tool_calls[...] hoặc no_tool=true), và metadata.what_it_tests. File để trống có chủ đích vì mỗi nhóm phải tự thiết kế các case này.",
-  "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "description": "Bộ đánh giá 10 test case do nhóm tự thiết kế (5 single-turn + 5 multi-turn) bao phủ các dạng lỗi wrong_tool, wrong_arg_value, wrong_boundary, unnecessary_tool, out_of_scope, missing_info.",
+  "allowed_failure_types": [
+    "wrong_tool",
+    "wrong_arg_value",
+    "wrong_boundary",
+    "unnecessary_tool",
+    "out_of_scope",
+    "missing_info"
+  ],
+  "cases": [
+    {
+      "id": "G01_currency_conversion",
+      "phase": "B",
+      "query": "Đổi 100 USD sang VND giúp tôi.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "currency",
+            "args": {
+              "amount": 100,
+              "from_currency": "USD",
+              "to_currency": "VND"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Single-turn: kiểm tra khả năng định tuyến sang custom tool currency mới."
+      }
+    },
+    {
+      "id": "G02_missing_url_clarify",
+      "phase": "B",
+      "query": "Đọc giúp tôi bài báo này.",
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify"
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Single-turn: kiểm tra việc dùng clarify khi câu hỏi thiếu URL."
+      }
+    },
+    {
+      "id": "G03_out_of_scope_math",
+      "phase": "B",
+      "query": "Giải phương trình 2x + 5 = 15.",
+      "failure_type": "out_of_scope",
+      "expect": {
+        "no_tool": true
+      },
+      "metadata": {
+        "what_it_tests": "Single-turn: kiểm tra xử lý câu hỏi toán ngoài scope (không dùng tool)."
+      }
+    },
+    {
+      "id": "G04_send_telegram_confirm",
+      "phase": "B",
+      "query": "Gửi tin nhắn 'Báo cáo đã hoàn thành' lên channel.",
+      "failure_type": "wrong_boundary",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Single-turn: kiểm tra ranh giới an toàn xin xác nhận yes_no trước khi gửi."
+      }
+    },
+    {
+      "id": "G05_lookup_general",
+      "phase": "B",
+      "query": "Tìm kiếm thông tin về mô hình Gemini 1.5 Pro.",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "Gemini 1.5 Pro"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Single-turn: kiểm tra tra cứu thông tin chung trên lookup."
+      }
+    },
+    {
+      "id": "G06_multi_clarify_then_currency",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tôi muốn quy đổi tiền."
+        },
+        {
+          "role": "assistant",
+          "content": "Bạn muốn đổi bao nhiêu tiền và từ đồng nào sang đồng nào?"
+        },
+        {
+          "role": "user",
+          "content": "Đổi 50 EUR sang USD."
+        }
+      ],
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "currency",
+            "args": {
+              "amount": 50,
+              "from_currency": "EUR",
+              "to_currency": "USD"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Multi-turn: hỏi bổ sung thông tin sau đó gọi đúng tool currency."
+      }
+    },
+    {
+      "id": "G07_multi_cancel_request",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm bài đăng của Elon Musk."
+        },
+        {
+          "role": "user",
+          "content": "Thôi không cần tìm nữa, cho tôi biết bạn hỗ trợ những gì."
+        }
+      ],
+      "failure_type": "unnecessary_tool",
+      "expect": {
+        "no_tool": true
+      },
+      "metadata": {
+        "what_it_tests": "Multi-turn: người dùng hủy yêu cầu cũ và hỏi thông tin trợ giúp (không gọi tool)."
+      }
+    },
+    {
+      "id": "G08_multi_correction_url",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Đọc trang web example.com"
+        },
+        {
+          "role": "user",
+          "content": "Ý tôi là đọc trang https://openai.com"
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://openai.com"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Multi-turn: cập nhật tham số URL mới nhất ở turn sau."
+      }
+    },
+    {
+      "id": "G09_multi_confirm_yes",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Gửi thông báo 'Chào mừng' lên Telegram."
+        },
+        {
+          "role": "assistant",
+          "content": "Bạn có chắc chắn muốn gửi tin nhắn này không?"
+        },
+        {
+          "role": "user",
+          "content": "Có, tôi xác nhận."
+        }
+      ],
+      "failure_type": "wrong_boundary",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "send",
+            "args": {
+              "text": "Chào mừng",
+              "confirmed": true
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Multi-turn: thực thi action send sau khi đã nhận lời xác nhận từ user."
+      }
+    },
+    {
+      "id": "G10_multi_out_of_scope_coding",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tóm tắt tài liệu này."
+        },
+        {
+          "role": "user",
+          "content": "Viết giúp tôi một đoạn code Python tính số Fibonacci."
+        }
+      ],
+      "failure_type": "out_of_scope",
+      "expect": {
+        "no_tool": true
+      },
+      "metadata": {
+        "what_it_tests": "Multi-turn: chuyển sang câu hỏi viết code ngoài scope (no tool)."
+      }
+    }
+  ]
 }
