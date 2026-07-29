@@ -285,7 +285,7 @@ def main() -> None:
     validate_expected_tools(cases, tool_declarations, args.eval_cases)
     openai_tools = to_openai_tools(tool_declarations)
 
-    delay_seconds = 20 if args.provider == "gemini" else 8
+    delay_seconds = 20 if args.provider == "gemini" else 3
 
     results: list[dict[str, Any]] = []
     for case_index, case in enumerate(cases):
