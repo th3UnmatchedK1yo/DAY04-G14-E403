@@ -7,6 +7,8 @@ Lê Tiến Minh - 2A202601193
 Hoàng Duy Linh - 2A202601159
 
 Nguyễn Phúc Huy Hoàng - 2A202601951
+
+Nguyễn Minh Thái - 2A202601619 
 ## Brief
 
 Trong lab này, nhóm build một research agent nhỏ nhưng chạy thật. Agent nhận request của user, chọn tool, truyền arguments, chạy tool thật, lưu full JSON log, rồi dùng log đó để tối ưu prompt/tool declaration qua nhiều version.
