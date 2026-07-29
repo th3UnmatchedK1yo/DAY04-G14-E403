@@ -4,6 +4,8 @@ Nguyễn Tuấn Anh - 2A202601395
 
 Lê Tiến Minh - 2A202601193 
 
+Hoàng Duy Linh - 2A202601159
+
 Nguyễn Phúc Huy Hoàng - 2A202601951
 ## Brief
 
