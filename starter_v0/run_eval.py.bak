@@ -285,24 +285,10 @@ def main() -> None:
     validate_expected_tools(cases, tool_declarations, args.eval_cases)
     openai_tools = to_openai_tools(tool_declarations)
 
-    delay_seconds = 20 if args.provider == "gemini" else 8
-
     results: list[dict[str, Any]] = []
-    for case_index, case in enumerate(cases):
-        if case_index > 0:
-            print(
-                f"Waiting {delay_seconds}s for {args.provider} rate limit...",
-                flush=True,
-            )
-            __import__("time").sleep(delay_seconds)
-
+    for case in cases:
         print(f"Running {case['id']}...", flush=True)
-        agent = ResearchAgent(
-            provider,
-            system_prompt=system_prompt,
-            tools=openai_tools,
-            model=args.model,
-        )
+        agent = ResearchAgent(provider, system_prompt=system_prompt, tools=openai_tools, model=args.model)
         try:
             tool_choice = None if case["expect"].get("no_tool") else "required"
             run = agent.run(case_messages(case), tool_choice=tool_choice)
