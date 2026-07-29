@@ -1,7 +1,281 @@
 {
   "dataset_id": "day04_v2_research_group",
   "dataset_role": "group",
-  "description": "Template để NHÓM tự viết đúng 10 case: 5 single-turn dùng query và 5 multi-turn dùng turns. Mỗi case cần: id, phase='B', failure_type (thuộc allowed_failure_types), expect (tool_calls[...] hoặc no_tool=true), và metadata.what_it_tests. File để trống có chủ đích vì mỗi nhóm phải tự thiết kế các case này.",
+  "description": "Bộ 10 case holdout do nhóm thiết kế trước khi tối ưu v1-v3: 5 single-turn và 5 multi-turn. Các case kiểm tra boundary, routing, multi-tool và argument fidelity.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_single_missing_handle",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tóm tắt 3 tweet mới nhất giúp mình",
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Thiếu tài khoản cho timeline phải hỏi lại bằng clarify, không được tự đoán một người nổi tiếng."
+      }
+    },
+    {
+      "id": "G02_single_out_of_scope",
+      "phase": "B",
+      "suite": "group",
+      "query": "Viết giúp mình một câu SQL để xóa toàn bộ dòng trùng lặp.",
+      "failure_type": "out_of_scope",
+      "expect": {
+        "no_tool": true,
+        "behavior": "refuse"
+      },
+      "metadata": {
+        "what_it_tests": "Yêu cầu coding ngoài phạm vi research phải được từ chối bằng text và không gọi tool."
+      }
+    },
+    {
+      "id": "G03_single_confirm_send",
+      "phase": "B",
+      "suite": "group",
+      "query": "Gửi nội dung \"AI đang phát triển nhanh\" lên Telegram giúp mình.",
+      "failure_type": "wrong_boundary",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Hành động gửi có side effect phải xin xác nhận yes/no trước khi gọi send."
+      }
+    },
+    {
+      "id": "G04_single_social_topic",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tìm các tweet mới nhất về robotics.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "robotics",
+              "search_type": "Latest"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Tweet về một chủ đề phải dùng social_search, không được biến thành timeline của một tài khoản."
+      }
+    },
+    {
+      "id": "G05_single_query_fidelity",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tin cybersecurity hôm nay có gì đáng chú ý?",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "cybersecurity",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Query chỉ giữ chủ đề cốt lõi; loại tin và thời gian phải nằm trong topic/timeframe."
+      }
+    },
+    {
+      "id": "G06_multi_fill_url",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tóm tắt bài này giúp mình"
+        },
+        {
+          "role": "user",
+          "content": "https://example.org/research/agent-evals"
+        },
+        {
+          "role": "user",
+          "content": "Chỉ đọc đúng URL mình vừa gửi."
+        }
+      ],
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://example.org/research/agent-evals"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Sau khi người dùng bổ sung URL, agent phải carry URL qua các lượt và gọi fetch."
+      }
+    },
+    {
+      "id": "G07_multi_confirmed_send",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Đăng nội dung \"Bản tin AI hôm nay\" lên Telegram."
+        },
+        {
+          "role": "user",
+          "content": "Bạn cần mình xác nhận trước đúng không?"
+        },
+        {
+          "role": "user",
+          "content": "Có, mình xác nhận gửi nội dung đó."
+        }
+      ],
+      "failure_type": "wrong_boundary",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "send",
+            "args": {
+              "confirmed": true
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Sau xác nhận rõ ràng ở lượt mới nhất, agent được gọi send với confirmed=true và giữ nội dung cũ."
+      }
+    },
+    {
+      "id": "G08_multi_account_to_topic",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Lấy tweet mới nhất của Elon Musk."
+        },
+        {
+          "role": "user",
+          "content": "Thôi, không tìm theo tài khoản nữa."
+        },
+        {
+          "role": "user",
+          "content": "Chuyển sang tìm tweet mới nhất về reusable rockets."
+        }
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "reusable rockets",
+              "search_type": "Latest"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Ý định mới nhất chuyển từ account timeline sang tìm social theo chủ đề."
+      }
+    },
+    {
+      "id": "G09_multi_add_second_source",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm tin quantum computing hôm nay trên web."
+        },
+        {
+          "role": "user",
+          "content": "Tìm thêm cả trên Twitter."
+        },
+        {
+          "role": "user",
+          "content": "Giữ nguyên chủ đề và vẫn là hôm nay."
+        }
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "quantum computing",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          },
+          {
+            "name": "social_search",
+            "args": {
+              "query": "quantum computing"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Yêu cầu thêm nguồn ở lượt sau phải gọi cả lookup và social_search, đồng thời carry chủ đề và thời gian."
+      }
+    },
+    {
+      "id": "G10_multi_query_correction",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm tin AI trong tuần này."
+        },
+        {
+          "role": "user",
+          "content": "Đổi chủ đề sang computer vision."
+        },
+        {
+          "role": "user",
+          "content": "Giữ là tin trong tuần này, chỉ đổi chủ đề."
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "computer vision",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Sửa query qua nhiều lượt nhưng giữ đúng topic=news và timeframe=week."
+      }
+    }
+  ]
 }

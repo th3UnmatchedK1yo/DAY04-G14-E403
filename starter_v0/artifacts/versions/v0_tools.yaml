@@ -1,15 +1,22 @@
-# v3 — stricter argument contract derived from the omissions observed in v2.
+# starter_v0 — tool declarations (intentionally vague).
+# Names and descriptions here are a rough first draft. Routing rules, name->handle
+# mapping, arg conventions (news/timeframe/Top), and the send-confirmation boundary
+# are NOT spelled out anywhere yet. Your job is to make these declarations + the
+# system prompt good enough that the agent routes correctly on the eval.
+#
+# If you rename a tool, keep the name in sync across:
+#   this file  ->  tools/__init__.py (TOOL_FUNCTIONS)  ->  data/eval_base.json + data/eval_research_extension.json
 tools:
   # ---------------- Core tools ----------------
   - name: clarify
-    description: "Hỏi người dùng khi thiếu thông tin bắt buộc hoặc khi cần xác nhận. Luôn truyền rõ response_type."
+    description: "Gửi một câu hỏi cho người dùng."
     parameters:
       type: object
       properties:
-        question: {type: string, default: "", description: "Câu hỏi cụ thể cần người dùng trả lời"}
-        response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "Dùng text khi cần bổ sung dữ liệu; yes_no khi cần xác nhận; choice khi có danh sách lựa chọn"}
-        options: {type: array, default: [], items: {type: string}, description: "Các lựa chọn khi response_type=choice"}
-      required: [question, response_type]
+        question: {type: string, default: "", description: "Câu hỏi"}
+        response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "Kiểu trả lời"}
+        options: {type: array, default: [], items: {type: string}, description: "Các lựa chọn"}
+      required: [question]
 
   - name: timeline
     description: "Lấy các bài đăng gần đây."
@@ -31,26 +38,15 @@ tools:
       required: [query]
 
   - name: lookup
-    description: "Tìm thông tin trên web. Luôn truyền rõ topic và timeframe thay vì dựa vào giá trị mặc định."
+    description: "Tra cứu thông tin trên internet."
     parameters:
       type: object
       properties:
-        query:
-          type: string
-          default: ""
-          description: "Chủ đề cốt lõi cần tìm; không đưa loại nguồn hoặc khoảng thời gian vào query."
-        topic:
-          type: string
-          enum: [general, news]
-          default: "general"
-          description: "Dùng news cho yêu cầu về tin/tin tức/sự kiện; dùng general cho tra cứu web không phải tin."
-        timeframe:
-          type: string
-          enum: [day, week, month, year]
-          default: "week"
-          description: "hôm nay hoặc mới nhất -> day; tuần này -> week; tháng này -> month; năm nay -> year; nếu không nêu thời gian dùng week."
+        query: {type: string, default: "", description: "Truy vấn"}
+        topic: {type: string, enum: [general, news], default: "general", description: "Phân loại"}
+        timeframe: {type: string, enum: [day, week, month, year], default: "week", description: "Khoảng thời gian"}
         max_results: {type: integer, default: 5, description: "Số kết quả"}
-      required: [query, topic, timeframe]
+      required: [query]
 
   - name: fetch
     description: "Lấy nội dung từ một địa chỉ."
@@ -80,30 +76,6 @@ tools:
         template: {type: string, enum: [brief, sections, bullets, thread, daily_ai_vn], default: "sections", description: "Khuôn"}
         headline: {type: string, default: "", description: "Tiêu đề"}
       required: [items, template]
-
-  # ---------------- Team-authored tools ----------------
-  - name: deduplicate
-    description: "Loại item nghiên cứu trùng lặp khỏi danh sách đã có, giữ item xuất hiện đầu tiên. Chỉ dùng sau khi đã thu thập items; không dùng để tìm kiếm, đọc URL, tóm tắt hoặc gửi nội dung."
-    parameters:
-      type: object
-      properties:
-        items:
-          type: array
-          default: []
-          description: "Danh sách item nghiên cứu cần khử trùng lặp"
-          items:
-            type: object
-            properties:
-              title: {type: string}
-              url: {type: string}
-              source: {type: string}
-              summary: {type: string}
-        strategy:
-          type: string
-          enum: [url, title, url_or_title]
-          default: "url_or_title"
-          description: "So trùng theo URL, title, hoặc chỉ cần trùng một trong hai"
-      required: [items]
 
   # ---------------- Bonus tools ----------------
   - name: send

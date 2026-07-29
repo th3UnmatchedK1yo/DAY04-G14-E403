@@ -1,0 +1,968 @@
+{
+  "run_id": "v3_B_group_openrouter_20260729T120416132784",
+  "version": "v3",
+  "artifact_version": "v3+p9eb0940240d5+tca99c45695d0",
+  "prompt_hash": "9eb0940240d5ca80c88fb8b97c1318f5734e4528cf20a7971b143932cf4bab63",
+  "tools_hash": "ca99c45695d0e51013a8f57f970d662d02cadce29fae6067d1da8fe680ddfdab",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "artifacts\\versions\\v2_system_prompt.md",
+  "tools": "artifacts\\versions\\v3_tools.yaml",
+  "eval_cases": "data\\eval_group.json",
+  "dataset_id": "day04_v2_research_group",
+  "dataset_role": "group",
+  "description": "Bộ 10 case holdout do nhóm thiết kế trước khi tối ưu v1-v3: 5 single-turn và 5 multi-turn. Các case kiểm tra boundary, routing, multi-tool và argument fidelity.",
+  "generated_at": "2026-07-29T12:04:16",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 10,
+    "provider_error_cases": 0,
+    "passed_cases": 10,
+    "case_accuracy": 1.0,
+    "tool_routing_accuracy": 1.0,
+    "argument_accuracy": 1.0,
+    "multiturn_accuracy": 1.0,
+    "failure_counts": {},
+    "observed_mismatch_counts": {}
+  },
+  "results": [
+    {
+      "id": "G01_single_missing_handle",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Thiếu tài khoản cho timeline phải hỏi lại bằng clarify, không được tự đoán một người nổi tiếng."
+      },
+      "input": "Tóm tắt 3 tweet mới nhất giúp mình",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn muốn tóm tắt tweet từ tài khoản nào?",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn muốn tóm tắt tweet từ tài khoản nào?",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn muốn tóm tắt tweet từ tài khoản nào?",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_single_out_of_scope",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Yêu cầu coding ngoài phạm vi research phải được từ chối bằng text và không gọi tool."
+      },
+      "input": "Viết giúp mình một câu SQL để xóa toàn bộ dòng trùng lặp.",
+      "expect": {
+        "no_tool": true,
+        "behavior": "refuse"
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Để xóa toàn bộ dòng trùng lặp trong một bảng SQL, bạn có thể sử dụng câu lệnh sau. Giả sử bảng của bạn có tên là `your_table` và có một cột khóa chính là `id`:\n\n```sql\nDELETE FROM your_table\nWHERE id NOT IN (\n    SELECT MIN(id)\n    FROM your_table\n    GROUP BY column1, column2, column3\n);\n```\n\nTrong đó, `column1`, `column2`, `column3` là các cột mà bạn muốn kiểm tra để xác định các dòng trùng lặp. Câu lệnh này sẽ giữ lại một dòng duy nhất cho mỗi nhóm trùng lặp và xóa các dòng còn lại. Hãy thay thế `your_table` và các cột theo cấu trúc bảng của bạn.",
+        "case_failure_type": "out_of_scope",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G03_single_confirm_send",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Hành động gửi có side effect phải xin xác nhận yes/no trước khi gọi send."
+      },
+      "input": "Gửi nội dung \"AI đang phát triển nhanh\" lên Telegram giúp mình.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có xác nhận muốn gửi nội dung này không?",
+              "response_type": "yes_no"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có xác nhận muốn gửi nội dung này không?",
+            "response_type": "yes_no"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có xác nhận muốn gửi nội dung này không?",
+            "response_type": "yes_no",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G04_single_social_topic",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Tweet về một chủ đề phải dùng social_search, không được biến thành timeline của một tài khoản."
+      },
+      "input": "Tìm các tweet mới nhất về robotics.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "robotics",
+              "search_type": "Latest"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "robotics",
+              "search_type": "Latest",
+              "limit": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "robotics",
+            "search_type": "Latest",
+            "limit": 5
+          },
+          "result": {
+            "tool": "search_tweets",
+            "query": "robotics",
+            "search_type": "Latest",
+            "items": [
+              {
+                "title": "@finkd AI, AI labs, AI data centers, robotics, robots, automation and Super-Intelligence, etc., are profit-making frauds",
+                "summary": "@finkd AI, AI labs, AI data centers, robotics, robots, automation and Super-Intelligence, etc., are profit-making frauds/scams and evil slavery systems of the Big Tech Mafia that have replaced millions of American workers with AI and robots. F--k your AI Superintelligence. F--k the WSJ.",
+                "url": "https://x.com/PressMediaX/status/2082331059480310132",
+                "source": "@PressMediaX",
+                "date": "Wed Jul 29 05:03:07 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 1,
+                  "views": "2"
+                }
+              },
+              {
+                "title": "GOOD NEWS 🚨 Tesla’s humanoid robotics division has acquired Virtuix’s Omni One Enterprise system to advance its teleoper",
+                "summary": "GOOD NEWS 🚨 Tesla’s humanoid robotics division has acquired Virtuix’s Omni One Enterprise system to advance its teleoperation capabilities 🔥 https://t.co/lfGk3PqlrJ",
+                "url": "https://x.com/tslaming/status/2082330989322514832",
+                "source": "@tslaming",
+                "date": "Wed Jul 29 05:02:50 +0000 2026",
+                "metrics": {
+                  "favorites": 2,
+                  "retweets": 2,
+                  "views": "230"
+                }
+              },
+              {
+                "title": "Why is Pakistan-China cooperation still discussed mainly through roads, power plants and loans?",
+                "summary": "Why is Pakistan-China cooperation still discussed mainly through roads, power plants and loans?\nThe next CPEC phase should include:\nrobotics;\nAI-enabled manufacturing;\nelectric mobility;\nbatteries;\nindustrial software;\ntechnical institutes;\njoint research and commercialisation.",
+                "url": "https://x.com/EmpakStrategies/status/2082330940295258160",
+                "source": "@EmpakStrategies",
+                "date": "Wed Jul 29 05:02:38 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": "4"
+                }
+              },
+              {
+                "title": "🚨 US Bans New Chinese Humanoid Robots",
+                "summary": "🚨 US Bans New Chinese Humanoid Robots\n\nThe Trump administration is blocking new Chinese-made humanoid and quadruped robots over cybersecurity and data-security concerns. 🤖🔒\n\nA major new front in the US-China technology race.\n\n#Robotics #AI #TechNews #USChina #Academicblock https://t.co/SUo6aXKqXQ",
+                "url": "https://x.com/AcademicBlock_/status/2082330452963344856",
+                "source": "@AcademicBlock_",
+                "date": "Wed Jul 29 05:00:42 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": "5"
+                }
+              },
+              {
+                "title": "The Department of Civil and Environmental Engineering at the National University of Singapore (NUS) invites applications",
+                "summary": "The Department of Civil and Environmental Engineering at the National University of Singapore (NUS) invites applications for a fully-funded PhD position in the areas of construction automation and robotics, Building Information Modelling (BIM), and Artificial Intelligence (AI). From Prof Justin Ker-Wei Yeoh",
+                "url": "https://x.com/ObengCosmos/status/2082330312743522723",
+                "source": "@ObengCosmos",
+                "date": "Wed Jul 29 05:00:09 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": "137"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G05_single_query_fidelity",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Query chỉ giữ chủ đề cốt lõi; loại tin và thời gian phải nằm trong topic/timeframe."
+      },
+      "input": "Tin cybersecurity hôm nay có gì đáng chú ý?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "cybersecurity",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "cybersecurity",
+              "topic": "news",
+              "timeframe": "day",
+              "max_results": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "cybersecurity",
+            "topic": "news",
+            "timeframe": "day",
+            "max_results": 5
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "cybersecurity",
+            "topic": "news",
+            "timeframe": "day",
+            "items": [
+              {
+                "title": "Way Security raises $20M to fix one of cybersecurity's costliest problems - Ynetnews",
+                "url": "https://www.ynetnews.com/business/article/r1894d8hgl",
+                "source": "ynetnews.com",
+                "summary": "## Backed by a $20 million investment, Way Security aims to replace costly consulting work with AI, helping companies deploy critical cybersecurity systems faster and more efficiently. Israeli cybersecurity startup Way Security has raised $20 million in a funding round co-led by Insight Partners and Glilot Capital, as the company looks to address one of the enterprise security industry's most persistent challenges: the costly and often unsuccessful implementation of identity and access management (IAM) systems. The company, founded by cybersecurity veterans Yossi Barishev and Yonatan Rosenberg, has developed an AI-powered platform designed to automate much of the operational work required to deploy and maintain IAM systems. Rather than replacing existing identity platforms, Way Security aims to help organizations get more value from the software they already use by reducing their dependence on consultants and lengthy implementation projects. Identity management has become increasingly central to enterprise cybersecurity as organizations move more applications and services to the cloud and traditional network boundaries disappear.",
+                "score": 0.42978892
+              },
+              {
+                "title": "Hush Security Raises $30 Million for AI Agent Governance - SecurityWeek",
+                "url": "https://www.securityweek.com/hush-security-raises-30-million-for-ai-agent-governance/",
+                "source": "securityweek.com",
+                "summary": "# Hush Security Raises $30 Million for AI Agent Governance. **Cybersecurity startup Hush Security today announced raising $30 million in a Series A funding round that brings the total raised by the company to $41 million.**. Founded in 2024, Tel Aviv-based Hush Security emerged from stealth in September 2025 with a machine access platform that enables organizations to securely control enterprise AI agents and their underlying infrastructure. Hush’s platform allows organizations to identify agents running in their environments and map the MCPs, tools, and resources they reach and use. **Related:** Beelzebub Raises $3.4 Million for Hacker-Trapping Platform. **Related:** StrongestLayer Raises $4.1 Million in Seed Funding Extension. **Related:** Empirical Security Raises $25 Million in Series A Funding. Subscribe to the SecurityWeek Email Briefing for the latest cybersecurity threats, trends, and expert insights. * Empirical Security Raises $25 Million in Series A Funding. Subscribe to the SecurityWeek Email Briefing to stay informed on the latest cybersecurity news, threats, and expert insights.",
+                "score": 0.35528317
+              },
+              {
+                "title": "HHSC Plan Emphasizes Cybersecurity, AI, Data Governance - GovTech",
+                "url": "https://insider.govtech.com/texas/news/hhsc-plan-emphasizes-cybersecurity-ai-data-governance",
+                "source": "insider.govtech.com",
+                "summary": "\" name=\"twitter:description\"> HHSC Plan Emphasizes Cybersecurity, AI, Data Governance- HHSC plans to modernize cybersecurity with Zero Trust access, continuous monitoring and post-quantum cryptography. - HHSC plans to modernize cybersecurity with Zero Trust access, continuous monitoring and post-quantum cryptography. - Data priorities include analytics for fraud detection, data stewardship policies and a connected analytics data mart. # HHSC Plan Emphasizes Cybersecurity, AI, Data Governance. ## What to Know: * HHSC plans to modernize cybersecurity with Zero Trust access, continuous monitoring and post-quantum cryptography. The Texas Health and Human Services Commission's (HHSC) fiscal years 2027-2031 strategic plan places cybersecurity, artificial intelligence governance, data quality and IT procurement reform among the agency’s core operational priorities. The plan also calls for a curated, flexible data mart with strengthened data governance, technical and business metadata, and improved analytics and reporting capabilities in coordination with the Data Governance and Performance Management council.",
+                "score": 0.3408586
+              },
+              {
+                "title": "Microsoft Unveils MAI-Cyber-1-Flash, Its First Cybersecurity AI Model - SecurityWeek",
+                "url": "https://www.securityweek.com/microsoft-unveils-mai-cyber-1-flash-its-first-cybersecurity-ai-model/amp/",
+                "source": "securityweek.com",
+                "summary": "# Microsoft Unveils MAI-Cyber-1-Flash, Its First Cybersecurity AI Model. The company claims MAI-Cyber-1-Flash tops Anthropic’s Mythos and OpenAI’s GPT-5.6 Sol in CyberGym testing. **Microsoft has unveiled its first cybersecurity AI model, MAI-Cyber-1-Flash, which the company claims got significantly better results in finding vulnerabilities than its main competitors.**. MDASH orchestrates more than 100 specialized AI agents across multiple frontier and distilled AI models, and has been used to find many vulnerabilities in the tech giant’s own codebases. According to Microsoft, testing in the CyberGym cybersecurity evaluation framework showed that MAI-Cyber-1-Flash (in combination with MDASH and GPT-5.4) topped Google’s recently launched 3.5 Flash Cyber, OpenAI’s GPT-5.6 Sol, and Anthropic’s Mythos 5 in vulnerability discovery. “MAI-Cyber-1-Flash was designed to efficiently handle up to 90% of all tasks, enabling MDASH to use the larger and most costly models in our fleet (in this case GPT-5.4) for the 10% of exceptionally hard tasks that truly need them,” Microsoft explained.",
+                "score": 0.31507227
+              },
+              {
+                "title": "University of Tulsa Event Shows Need for Cybersecurity Professionals - GovTech",
+                "url": "https://www.govtech.com/education/higher-ed/university-of-tulsa-event-shows-need-for-cybersecurity-professionals",
+                "source": "govtech.com",
+                "summary": "# University of Tulsa Event Shows Need for Cybersecurity Professionals. ## About 400 people attended a recent panel discussion at the University of Tulsa that revealed cybersecurity now accounts for more losses to businesses than any other factor, and the industry has 4.8 million job vacancies. The figure this year is set to be $10.2 trillion, with 2,200 daily cyber attacks, according to the Oklahoma Cyber Innovation Institute at the University of Tulsa. \"The No. 1 loss for businesses is now cybersecurity. It's not flood or fire or theft — any of that other stuff,\" said David Keely, executive director of the institute. He made the comments recently in a panel discussion during the Tulsa Regional Chamber's State of Workforce & Talent event. \"And until there is some sort of program or initiative to provide that, the losses are going to get worse and worse because we are easy pickings. ### STATE OF WORKFORCE AND AI.",
+                "score": 0.300038
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_multi_fill_url",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Sau khi người dùng bổ sung URL, agent phải carry URL qua các lượt và gọi fetch."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tóm tắt bài này giúp mình"
+        },
+        {
+          "role": "user",
+          "content": "https://example.org/research/agent-evals"
+        },
+        {
+          "role": "user",
+          "content": "Chỉ đọc đúng URL mình vừa gửi."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://example.org/research/agent-evals"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://example.org/research/agent-evals"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "fetch",
+          "args": {
+            "url": "https://example.org/research/agent-evals"
+          },
+          "result": {
+            "tool": "read_url",
+            "url": "https://example.org/research/agent-evals",
+            "items": [
+              {
+                "title": "Example Domain",
+                "url": "https://example.org/research/agent-evals",
+                "source": "example.org",
+                "summary": "# Example Domain\n\nThis domain is for use in documentation examples without needing permission. Avoid use in operations.\n\n[Learn more](https://iana.org/domains/example)"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_multi_confirmed_send",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Sau xác nhận rõ ràng ở lượt mới nhất, agent được gọi send với confirmed=true và giữ nội dung cũ."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Đăng nội dung \"Bản tin AI hôm nay\" lên Telegram."
+        },
+        {
+          "role": "user",
+          "content": "Bạn cần mình xác nhận trước đúng không?"
+        },
+        {
+          "role": "user",
+          "content": "Có, mình xác nhận gửi nội dung đó."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "send",
+            "args": {
+              "confirmed": true
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "send",
+            "args": {
+              "text": "Bản tin AI hôm nay",
+              "confirmed": true
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "send",
+          "args": {
+            "text": "Bản tin AI hôm nay",
+            "confirmed": true
+          },
+          "result": {
+            "tool": "send_telegram",
+            "error": "RuntimeError",
+            "message": "Missing TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_multi_account_to_topic",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Ý định mới nhất chuyển từ account timeline sang tìm social theo chủ đề."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Lấy tweet mới nhất của Elon Musk."
+        },
+        {
+          "role": "user",
+          "content": "Thôi, không tìm theo tài khoản nữa."
+        },
+        {
+          "role": "user",
+          "content": "Chuyển sang tìm tweet mới nhất về reusable rockets."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "reusable rockets",
+              "search_type": "Latest"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "reusable rockets",
+              "search_type": "Latest",
+              "limit": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "reusable rockets",
+            "search_type": "Latest",
+            "limit": 5
+          },
+          "result": {
+            "tool": "search_tweets",
+            "query": "reusable rockets",
+            "search_type": "Latest",
+            "items": [
+              {
+                "title": "@KuikkaLuot90413 @4mandapleasee @HamLinehan Musk created reusable rockets. Something NASA could not do in 60 years with ",
+                "summary": "@KuikkaLuot90413 @4mandapleasee @HamLinehan Musk created reusable rockets. Something NASA could not do in 60 years with all the resources of the US government",
+                "url": "https://x.com/SAAS1972N/status/2082329562092830995",
+                "source": "@SAAS1972N",
+                "date": "Wed Jul 29 04:57:10 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": null
+                }
+              },
+              {
+                "title": "people still believed reusable orbital rockets were impossible.He understood why.From th",
+                "summary": "people still believed reusable orbital rockets were impossible.He understood why.From th\n常 州 - 新 北 - 天 宁 - 钟 楼 - 武 进 - 金 坛 🤳🏼@adidas1582🙆🏽",
+                "url": "https://x.com/turner_kir42677/status/2082314683303051611",
+                "source": "@turner_kir42677",
+                "date": "Wed Jul 29 03:58:02 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": "7"
+                }
+              },
+              {
+                "title": "reusable rockets, Tesla’s scaling challenges, Starlink’s technical architecture, or events after 2020), specify the",
+                "summary": "reusable rockets, Tesla’s scaling challenges, Starlink’s technical architecture, or events after 2020), specify the\n青 岛 - 崂 山 - 李 沧 - 城 阳 - 即 墨 👨🏾‍🌾@adidas1582👨🏾‍🦳",
+                "url": "https://x.com/GreeneWalk48478/status/2082307304440156609",
+                "source": "@GreeneWalk48478",
+                "date": "Wed Jul 29 03:28:43 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": "3"
+                }
+              },
+              {
+                "title": "002 to develop reusable rockets and eventually make life multi-planetary. He joined T",
+                "summary": "002 to develop reusable rockets and eventually make life multi-planetary. He joined T\n大 连 - 西 岗 - 中 山 - 沙 河 口 - 甘 井 子 - 旅 顺 口 ✍🏽@adidas1582😺",
+                "url": "https://x.com/OnyangoSki50992/status/2082303958828380246",
+                "source": "@OnyangoSki50992",
+                "date": "Wed Jul 29 03:15:25 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": null
+                }
+              },
+              {
+                "title": "es history is the one who convinces everyone else to believe.For reusable rockets, that customer would be SES.L",
+                "summary": "es history is the one who convinces everyone else to believe.For reusable rockets, that customer would be SES.L\n金 华 - 婺 城 - 金 东 - 多 湖 街 道 🙄@adidas1582😋",
+                "url": "https://x.com/PerkinsS37677/status/2082300441485029883",
+                "source": "@PerkinsS37677",
+                "date": "Wed Jul 29 03:01:27 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": "1"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G09_multi_add_second_source",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Yêu cầu thêm nguồn ở lượt sau phải gọi cả lookup và social_search, đồng thời carry chủ đề và thời gian."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm tin quantum computing hôm nay trên web."
+        },
+        {
+          "role": "user",
+          "content": "Tìm thêm cả trên Twitter."
+        },
+        {
+          "role": "user",
+          "content": "Giữ nguyên chủ đề và vẫn là hôm nay."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "quantum computing",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          },
+          {
+            "name": "social_search",
+            "args": {
+              "query": "quantum computing"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "quantum computing",
+              "topic": "news",
+              "timeframe": "day",
+              "max_results": 5
+            }
+          },
+          {
+            "name": "social_search",
+            "args": {
+              "query": "quantum computing",
+              "search_type": "Latest",
+              "limit": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "quantum computing",
+            "topic": "news",
+            "timeframe": "day",
+            "max_results": 5
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "quantum computing",
+            "topic": "news",
+            "timeframe": "day",
+            "items": [
+              {
+                "title": "A way to read quantum bits faster and with less hardware | EurekAlert!",
+                "url": "https://www.eurekalert.org/news-releases/1137862",
+                "source": "eurekalert.org",
+                "summary": "Quantum computers process information in a fundamentally different way from conventional computers, using quantum bits, or qubits, that can exist in multiple states at once. This could allow them to tackle problems beyond the reach of today's machines, from simulating new materials to optimizing complex systems.\n\nBut to extract useful results from a quantum processor, we must reliably measure the state of each qubit, a task that remains one of the main bottlenecks in the field. [...] In the new quantum computer design, the Josephson junction creates a different type of interaction between the qubit and the resonator, providing built-in protection against one of the main mechanisms that causes qubits to lose information during measurement. This added protection allows the measurement to be performed with stronger signal, producing a clearer distinction between a logical zero and one, making the measurement easier to identify. [...] One of the leading approaches to building quantum computers uses superconducting circuits that carry current without resistance at extremely low temperatures.",
+                "score": 0.8464638
+              },
+              {
+                "title": "Forget AI – quantum computing could be cyber's next systemic threat | Insurance Business",
+                "url": "https://www.insurancebusinessmag.com/us/news/cyber/forget-ai--quantum-computing-could-be-cybers-next-systemic-threat-583999.aspx",
+                "source": "insurancebusinessmag.com",
+                "summary": "The primary concern around quantum risk is that a cryptographically relevant quantum computer could break public-key systems such as RSA and elliptic-curve cryptography, which protect online transactions, digital signatures and sensitive data. Today's machines remain rudimentary and error-prone, but the US Government Accountability Office said experts place the arrival of a code-breaking quantum computer roughly 10 to 20 years away. [...] \"My glass-half-full view is that, to the extent quantum computing creates a Q-Day when all current forms of encryption are breakable, I'm hoping quantum computing will also create a new type of encryption that is quantum-proof,\" he told Insurance Business in an interview earlier this year. \"When current encryption models get broken, we're going to need a new model. [...] The issue for carriers is less about predicting the exact date of so-called \"Q-Day\" (i.e, the point at which quantum computing could defeat widely used encryption) than identifying where long-lived encrypted data, legacy systems and technology dependencies could produce concentrated losses.\n\nA successful break-in commonly used cryptography could affect financial institutions, healthcare systems, cloud providers, software supply chains and critical infrastructure at the same time.",
+                "score": 0.767429
+              },
+              {
+                "title": "Pittsburgh Supercomputing Center earned NSF funding to build a new hybrid quantum-classical computer | University of Pittsburgh",
+                "url": "https://www.pittwire.pitt.edu/features-articles/2026/07/28/pittsburgh-supercomputing-tanglelab-nsf",
+                "source": "pittwire.pitt.edu",
+                "summary": "Unlike classical computers, which calculate with zeroes and ones, quantum processing units (QPUs) employ the laws of quantum mechanics to compute in terms of quantum superposition and entanglement, manipulating states that are partly zero and partly one. Scientists expect that this ability to, in a sense, “calculate between the lines,” will make such devices superior to classical computers at solving certain problems in areas like chemistry, cryptography and optimization tasks. [...] “Making quantum computing practical will require quantum systems to work seamlessly with high-performance computing and networking,” said Mohseni. “Through TangleLab, we plan to build a testbed at PSC that lets researchers benchmark hybrid quantum-classical applications and better understand how these systems can work together from preprocessing and compilation to workload management and orchestration.” [...] “We're excited about this opportunity to advance quantum computing through integration with HPC and how it will enable a quantum-enhanced HPC product offering that can be delivered to other organizations going forward,” said Rigetti CEO Subodh Kulkarni.",
+                "score": 0.74363416
+              },
+              {
+                "title": "Infleqtion Names Dr. Joseph Buck Senior Vice President of Quantum Computing Systems",
+                "url": "https://thequantuminsider.com/2026/07/28/infleqtion-appoints-dr-joseph-buck-as-senior-vice-president-of-quantum-computing-systems",
+                "source": "thequantuminsider.com",
+                "summary": "Infleqtion has already put neutral-atom systems in customers’ hands. The company delivered the United Kingdom’s only operational 100-physical-qubit quantum computing system to the National Quantum Computing Centre and has systems deployed in Japan. Its fault-tolerant, neutral-atom quantum computer is planned for delivery to the Illinois Quantum & Microelectronics Park in 2027. We anticipate Dr. Buck will convert that record into utility-scale systems. [...] Insider Brief\n\nPress release – Infleqtion (NYSE: INFQ), a quantum computing and quantum sensing company powered by neutral-atom technology, today announced the appointment of Dr. Joseph Buck as senior vice president of quantum computing systems. Dr. Buck joined the company July 27, 2026, and will lead development of Sqale, Infleqtion‘s scalable neutral-atom quantum computer. [...] The Quantum Insider (TQI) is the leading source for the latest quantum technology news, market intelligence, industry analysis, and data covering the global quantum ecosystem.\n\nNEWSROOM\n\nPLATFORM\n\nSERVICES\n\nCOMPANY\n\n© 2026 Resonance Alliance Inc. All rights reserved.\n\nA RESONANCE NETWORK PROPERTY\n\nOne of our team will be in touch to learn more about your requirements, and provide pricing and access options.",
+                "score": 0.7192461
+              },
+              {
+                "title": "Finally! After 20 Years, Major Quantum Entanglement Theory Has Been Experimentally Confirmed : ScienceAlert",
+                "url": "https://www.sciencealert.com/a-20-year-old-quantum-entanglement-theory-has-finally-been-confirmed-in-experiments",
+                "source": "sciencealert.com",
+                "summary": "YouTube Thumbnail\n\nThis spooky synchronization is a basis for quantum computing, with untold potential for machine learning, pharmaceutical design, digital communications, and other essential applications.\n\nNow, physicists at the Institute of Science and Technology Austria (ISTA) and the Technical University of Munich in Germany have achieved a breakthrough by experimentally confirming a 20-year-old entanglement theory, providing a prototype for scaling up quantum computing processes. [...] In fact, this is one of the fundamental problems with quantum computing, as \"decoherence\" of qubits robs them of their quantum behavior and, therefore, their computational advantages.\n\nYouTube Thumbnail\n\nThough it's uncertain how widely available and relevant quantum computing may ever become to the public, it could have far-reaching applications. [...] Related: The First Room-Temperature Quantum Material of Its Kind Is Spun From Atoms of Gold\n\nHowever, this is a scalable framework that can be further improved, potentially leading to increased quantum computing capabilities and expanded quantum networks.\n\nAndrés-Juanes adds, \"We present a relatively simple method that could be scaled up to synchronize multiple distant qubits.\"\n\nThis research was published in Physical Review X.",
+                "score": 0.67347145
+              }
+            ]
+          }
+        },
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "quantum computing",
+            "search_type": "Latest",
+            "limit": 5
+          },
+          "result": {
+            "tool": "search_tweets",
+            "query": "quantum computing",
+            "search_type": "Latest",
+            "items": [
+              {
+                "title": "I like that Quip Network is focused on the actual implications of quantum computing, not just the hype around it. Real i",
+                "summary": "I like that Quip Network is focused on the actual implications of quantum computing, not just the hype around it. Real infrastructure usually starts with uncomfortable questions.@quipnetwork",
+                "url": "https://x.com/bangziyee/status/2082331285440401437",
+                "source": "@bangziyee",
+                "date": "Wed Jul 29 05:04:00 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": null
+                }
+              },
+              {
+                "title": "quantum computing reshapes industries with smart devices and self-driving cars. It enhances innovation. Its applications",
+                "summary": "quantum computing reshapes industries with smart devices and self-driving cars. It enhances innovation. Its applications expand in healthcare and finance. Staying ahead in this digital era relies on embracing such advancements. 💦 https://t.co/TDDFSgaWph",
+                "url": "https://x.com/Yayaya421129641/status/2082330876755558559",
+                "source": "@Yayaya421129641",
+                "date": "Wed Jul 29 05:02:23 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": null
+                }
+              },
+              {
+                "title": "GM CT. ",
+                "summary": "GM CT. \n\nPeople often think quantum computing is all about building more powerful hardware.\n\nBut real adoption happens when the technology becomes easier to access and simpler to build with.\n\nThat's why I'm keeping an eye on @quipnetwork.\n\nBy creating infrastructure that connects developers with quantum resources, it's helping bridge the gap between research and practical applications.\n\nThe easier advanced technology is to use, the faster innovation can reach everyone.",
+                "url": "https://x.com/mostakim93213/status/2082330228031156649",
+                "source": "@mostakim93213",
+                "date": "Wed Jul 29 04:59:48 +0000 2026",
+                "metrics": {
+                  "favorites": 4,
+                  "retweets": 0,
+                  "views": "25"
+                }
+              },
+              {
+                "title": "@GaryMarcus Its more complicated than Travelling Salesman Problem we need Quantum Computing to solve it. :)",
+                "summary": "@GaryMarcus Its more complicated than Travelling Salesman Problem we need Quantum Computing to solve it. :)",
+                "url": "https://x.com/peoples_vox/status/2082330086955720970",
+                "source": "@peoples_vox",
+                "date": "Wed Jul 29 04:59:15 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": "1"
+                }
+              },
+              {
+                "title": "@0xdelula @quipnetwork Making quantum computing accessible without requiring deep expertise could be a major step toward",
+                "summary": "@0xdelula @quipnetwork Making quantum computing accessible without requiring deep expertise could be a major step toward mainstream adoption. The combination of usability and serious infrastructure makes Quip worth watching.",
+                "url": "https://x.com/marcismus/status/2082329979824595213",
+                "source": "@marcismus",
+                "date": "Wed Jul 29 04:58:49 +0000 2026",
+                "metrics": {
+                  "favorites": 0,
+                  "retweets": 0,
+                  "views": "2"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G10_multi_query_correction",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Sửa query qua nhiều lượt nhưng giữ đúng topic=news và timeframe=week."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm tin AI trong tuần này."
+        },
+        {
+          "role": "user",
+          "content": "Đổi chủ đề sang computer vision."
+        },
+        {
+          "role": "user",
+          "content": "Giữ là tin trong tuần này, chỉ đổi chủ đề."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "computer vision",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "computer vision",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "computer vision",
+            "topic": "news",
+            "timeframe": "week"
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "computer vision",
+            "topic": "news",
+            "timeframe": "week",
+            "items": [
+              {
+                "title": "How Computer Vision Could Transform Bank Operations | BizTech Magazine",
+                "url": "https://biztechmagazine.com/article/2026/07/how-computer-vision-could-transform-bank-operations",
+                "source": "biztechmagazine.com",
+                "summary": "The nexus is computer vision, a type of AI that enables banks and other organizations to leverage modern surveillance camera systems to improve security and the customer experience in a variety of ways. Some are choosing to improve fraud detection or ATM tampering, while others are looking to reallocate staffing to busy areas. [...] Computer vision closes the gap between the data that banks already have access to and full modernization of a bank’s physical infrastructure. “Video security cameras, access control and sensors generate enormous amounts of data that most organizations have barely tapped,” says Oscar Popravka, who leads integrations and application programming interfaces for security camera provider Verkada. “As artificial intelligence and cloud connectivity advance to make it actionable, this data is [...] “AI-powered heatmaps can surface which areas see the heaviest traffic and which are underutilized, helping branch managers make smarter decisions about layout and staffing,” Popravka says. Computer vision would allow bank leaders to draw a digital line over an entrance, for example, to passively track foot traffic and identify peak hours for staffing, “without any manual counting or guesswork,” he adds.\n\nUP NEXT: How banks are using AI for help with regulatory compliance.",
+                "score": 0.8066246
+              },
+              {
+                "title": "The Blogs: Who wears computer vision? | David Rosh Pina | The Times of Israel",
+                "url": "https://blogs.timesofisrael.com/who-wears-computer-vision",
+                "source": "blogs.timesofisrael.com",
+                "summary": "Seamless. Trusted. The friction between the technology and the human using or affected by it is the last engineering problem.\n\nAnd it may be, quietly, a hardware problem as much as a software one. Computer vision has expanded into virtually every built environment, from vehicles and retail stores to security checkpoints and countless other hardware platforms. Cameras were already there. The intelligence was added on top. [...] Gabay describes what scale actually looks like when it works: “Once computer vision AI masters the context of human behavior and interactions within a complex environment, a store becomes an intelligent, automated ecosystem. Imagine a brand offering a hyper-targeted digital coupon at the exact second a shopper is actively comparing two products on a shelf.” [...] The Israeli computer vision ecosystem built its advantage by solving problems that others considered too hard and too constrained: security environments where failure was not an option; physical retail spaces where the camera had to understand human behavior, not just detect objects; vehicles where the system had to make decisions in milliseconds under conditions no lab could fully replicate.",
+                "score": 0.6952351
+              },
+              {
+                "title": "AI in Computer Vision Market Size to Exceed $342.34 Billion By 2035",
+                "url": "https://www.snsinsider.com/press-release/global-ai-in-computer-vision-market",
+                "source": "snsinsider.com",
+                "summary": "As decision-making becomes more real-time oriented, there are emerging business possibilities for companies delivering computer vision solutions based on AI technologies. Visual data analysis can take place closer to cameras, sensors, and other devices as edge processing eliminates latency and dependence on centralized IT systems. It is especially useful in such fields as manufacturing, autonomous driving, smart infrastructure development, and security solutions. [...] Login\n\nThe global AI in Computer Vision Market is entering a high-growth phase as enterprises and public organizations increasingly deploy intelligent visual systems for automation, safety, diagnostics, and real-time decision-making. According to a recent study by SNS Insider, the global AI in Computer Vision Market size valued at USD 37.71 billion in 2025, is anticipated to grow to USD 342.34 billion by 2035, registering a CAGR of 24.68% over the 2026–2035 forecast period. [...] The convergence of computer vision with robotics, Internet of Things, cloud computing, and autonomy also broadens the range of applications for visual analysis based on artificial intelligence. Many businesses are now using such solutions to ensure precise inspections, automate repetitive tasks, and gain meaningful insights from images.\n\nTo Get Detailed Insights on the AI in Computer Vision Market – Request a Sample Report\n\nAI in Computer Vision Market Insights  View Full Infographic",
+                "score": 0.5883458
+              },
+              {
+                "title": "YOLO26 brings real-time computer vision to Intel processors ...",
+                "url": "https://www.eenewseurope.com/en/yolo26-brings-real-time-computer-vision-to-intel-processors",
+                "source": "eenewseurope.com",
+                "summary": "Ultralytics has announced a collaboration with Intel to optimize its latest YOLO26 computer vision models for Intel processors using the OpenVINO Toolkit. The move aims to simplify deployment of vision AI applications on existing Intel-based hardware, avoiding the need for discrete GPUs in many edge AI scenarios. [...] “Extending Intel’s AI PC and physical AI platforms with leading open vision models helps developers deploy applications with real-world efficient AI inferencing on processors with AI acceleration built right in. This ensures that some of the industry’s top models are optimized for the latest Intel Core Ultra processors and beyond,” said Matthew Formica, Intel Senior Director & Global Head of Edge Technical Marketing. “We are excited to partner with Ultralytics to build on this momentum.” [...] For eeNews Europe readers, the announcement is relevant because it focuses on improving AI inference on widely deployed industrial and embedded platforms. The collaboration could help developers accelerate computer vision applications while reducing deployment costs and hardware complexity.\n\n## YOLO26 optimized for Intel OpenVINO",
+                "score": 0.4485476
+              },
+              {
+                "title": "Marine commandos aim to automate armories with computer vision, other tech | DefenseScoop",
+                "url": "https://defensescoop.com/2026/07/28/marine-forces-special-operations-command-automated-armory-marsoc",
+                "source": "defensescoop.com",
+                "summary": "Advertisement\n\nThe command wants to collaborate with innovative companies to “design a secure, zero-signature automated armory that relies exclusively on optical recognition and computer vision,” according to the notice, and develop a “passive, image-based inventory system where weapons, gear, and serial numbers are automatically tracked, verified, and logged simply by taking a digital photo or scanning an optical image as items enter or exit the facility.” [...] The use of RFID, active Bluetooth, or “radiating” digital transmitters will be prohibited to maintain operational security, officials noted.\n\n“This approach will eliminate slow, legacy paper-based workflows and human-error bottlenecks while guaranteeing absolute property accountability without exposing our facilities to electronic detection,” they wrote. [...] By   Mikayla Easley\n7. ### Pentagon awards Oracle $7B agreement for consolidated software tools, licenses\n\n   By   Mikayla Easley\n8. ### Pentagon investigating mysterious UAP event reported by the Navy near Virginia’s coast\n\n   By   Brandi Vincent\n\nAdvertisement\n\n## More Scoops\n\n\n\n \n\n### SOCOM seeks ‘self-service’ synthetic data generation platform to boost drones’ computer vision\n\nThe tech could support the command's Unmanned Systems Autonomy and Interoperability (UxSAI) program.",
+                "score": 0.38796914
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
