@@ -1,14 +1,19 @@
 # Day 04 Lab v2 — Research Agent Tool Eval
+
 # Thành viên trong nhom
+
 Nguyễn Tuấn Anh - 2A202601395
 
-Lê Tiến Minh - 2A202601193 
+Lê Tiến Minh - 2A202601193
 
 Hoàng Duy Linh - 2A202601159
 
 Nguyễn Phúc Huy Hoàng - 2A202601951
 
-Nguyễn Minh Thái - 2A202601619 
+Nguyễn Minh Thái - 2A202601619
+
+Võ Hà Minh Huy - 2A202601373
+
 ## Brief
 
 Trong lab này, nhóm build một research agent nhỏ nhưng chạy thật. Agent nhận request của user, chọn tool, truyền arguments, chạy tool thật, lưu full JSON log, rồi dùng log đó để tối ưu prompt/tool declaration qua nhiều version.
@@ -95,20 +100,20 @@ Trong fixed eval, chỉ đổi field tên tool để đồng bộ rename; không
 
 ## Các file quan trọng
 
-| Path | Mục đích |
-|---|---|
-| `artifacts/system_prompt.md` | instruction cho agent |
-| `artifacts/tools.yaml` | tên, mô tả và schema của tool |
-| `artifacts/version_log.csv` | giả thuyết và metric theo version |
-| `artifacts/REPORT.md` | tài liệu demo và bằng chứng nộp bài |
-| `data/eval_base.json` | base eval cố định |
-| `data/eval_group.json` | 10 case do nhóm tự viết |
-| `tools/<tool_name>/` | `TOOL.md` + implementation |
-| `scripts/preflight_provider.py` | kiểm tra provider |
+| Path                            | Mục đích                            |
+| ------------------------------- | ----------------------------------- |
+| `artifacts/system_prompt.md`    | instruction cho agent               |
+| `artifacts/tools.yaml`          | tên, mô tả và schema của tool       |
+| `artifacts/version_log.csv`     | giả thuyết và metric theo version   |
+| `artifacts/REPORT.md`           | tài liệu demo và bằng chứng nộp bài |
+| `data/eval_base.json`           | base eval cố định                   |
+| `data/eval_group.json`          | 10 case do nhóm tự viết             |
+| `tools/<tool_name>/`            | `TOOL.md` + implementation          |
+| `scripts/preflight_provider.py` | kiểm tra provider                   |
 
 ## Tool tracks
 
-Phần dưới đây chỉ tóm tắt mỗi tool *làm gì*. Việc xác định *khi nào dùng* tool nào là phần nhóm tự định nghĩa trong prompt và tool declaration. Giữ một declaration optional trong `tools.yaml` vẫn có thể ảnh hưởng routing, dù nó không đổi yêu cầu must-have.
+Phần dưới đây chỉ tóm tắt mỗi tool _làm gì_. Việc xác định _khi nào dùng_ tool nào là phần nhóm tự định nghĩa trong prompt và tool declaration. Giữ một declaration optional trong `tools.yaml` vẫn có thể ảnh hưởng routing, dù nó không đổi yêu cầu must-have.
 
 Core tools:
 
