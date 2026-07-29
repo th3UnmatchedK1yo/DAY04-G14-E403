@@ -1,7 +1,106 @@
 {
   "dataset_id": "day04_v2_research_group",
   "dataset_role": "group",
-  "description": "Template để NHÓM tự viết đúng 10 case: 5 single-turn dùng query và 5 multi-turn dùng turns. Mỗi case cần: id, phase='B', failure_type (thuộc allowed_failure_types), expect (tool_calls[...] hoặc no_tool=true), và metadata.what_it_tests. File để trống có chủ đích vì mỗi nhóm phải tự thiết kế các case này.",
+  "description": "Bộ 10 test cases tự viết của nhóm.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "ST_01_translate_en_vi",
+      "phase": "B",
+      "query": "Dịch câu 'Hello world' sang tiếng Việt giúp mình",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "translate", "args": {"text": "Hello world", "target_language": "Vietnamese"}}]},
+      "metadata": {"what_it_tests": "Kiểm tra agent có dùng tool translate vừa mới tạo không"}
+    },
+    {
+      "id": "ST_02_weather_out_of_scope",
+      "phase": "B",
+      "query": "Thời tiết Hà Nội hôm nay thế nào?",
+      "failure_type": "out_of_scope",
+      "expect": {"no_tool": true},
+      "metadata": {"what_it_tests": "Yêu cầu thời tiết nằm ngoài phạm vi research agent"}
+    },
+    {
+      "id": "ST_03_greeting_no_tool",
+      "phase": "B",
+      "query": "Chào bạn, chúc một ngày tốt lành!",
+      "failure_type": "unnecessary_tool",
+      "expect": {"no_tool": true},
+      "metadata": {"what_it_tests": "Câu chào hỏi thông thường không cần dùng tool"}
+    },
+    {
+      "id": "ST_04_translate_missing_text",
+      "phase": "B",
+      "query": "Dịch sang tiếng Pháp giúp mình",
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "text"}}]},
+      "metadata": {"what_it_tests": "Thiếu văn bản cần dịch, bắt buộc dùng clarify để hỏi lại"}
+    },
+    {
+      "id": "ST_05_fetch_specific_url",
+      "phase": "B",
+      "query": "Hãy đọc nội dung trang web https://example.com/ai-news",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "fetch", "args": {"url": "https://example.com/ai-news"}}]},
+      "metadata": {"what_it_tests": "Đã có URL cụ thể thì phải gọi fetch thay vì lookup"}
+    },
+    {
+      "id": "MT_01_translate_context",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Mình muốn dịch câu 'Machine learning is fascinating'"},
+        {"role": "user", "content": "Sang tiếng Hàn nhé"}
+      ],
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "translate", "args": {"text": "Machine learning is fascinating", "target_language": "Korean"}}]},
+      "metadata": {"what_it_tests": "Multi-turn: Giữ được đoạn text từ turn trước và gộp với target_language từ turn sau"}
+    },
+    {
+      "id": "MT_02_missing_url_multi",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Bạn đọc bài viết này được không?"},
+        {"role": "user", "content": "Bài đó viết về lập trình."}
+      ],
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "text"}}]},
+      "metadata": {"what_it_tests": "Qua nhiều lượt vẫn chưa cung cấp URL, phải hỏi lại thay vì tự đoán bừa"}
+    },
+    {
+      "id": "MT_03_send_boundary",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Tìm hiểu về VinUni"},
+        {"role": "user", "content": "Gửi kết quả đó lên nhóm Telegram cho mình luôn đi"}
+      ],
+      "failure_type": "wrong_boundary",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "yes_no"}}]},
+      "metadata": {"what_it_tests": "Yêu cầu gửi tin nhắn cần phải gọi clarify xác nhận yes/no trước tiên"}
+    },
+    {
+      "id": "MT_04_change_topic",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Tin tức AI hôm nay có gì?"},
+        {"role": "user", "content": "Thôi tìm tin về blockchain đi"}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "lookup", "args": {"query": "blockchain", "topic": "news", "timeframe": "day"}}]},
+      "metadata": {"what_it_tests": "Chuyển topic nhưng vẫn phải kế thừa timeframe=day và topic=news từ lượt 1"}
+    },
+    {
+      "id": "MT_05_parallel_tools_late",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Tìm hiểu về GPT-5"},
+        {"role": "user", "content": "À, tìm thêm cả trên Twitter xem mọi người bàn tán gì về GPT-5 nữa"}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [
+        {"name": "lookup", "args": {"query": "GPT-5", "topic": "general"}},
+        {"name": "social_search", "args": {"query": "GPT-5"}}
+      ]},
+      "metadata": {"what_it_tests": "Multi-turn bẻ lái sang yêu cầu tìm song song 2 nền tảng cùng lúc"}
+    }
+  ]
 }

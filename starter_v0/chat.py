@@ -42,7 +42,10 @@ def trim_history(history: list[dict[str, str]], window: int) -> list[dict[str, s
 
 
 def execute_tool_call(call: ToolCall) -> dict[str, Any]:
-    func = TOOL_FUNCTIONS.get(call.name)
+    import tools
+    import importlib
+    importlib.reload(tools)
+    func = tools.TOOL_FUNCTIONS.get(call.name)
     if not func:
         return {
             "tool": call.name,

@@ -116,3 +116,20 @@ tools:
         max_pages: {type: integer, default: 5, description: "Số trang"}
         max_chars: {type: integer, default: 8000, description: "Số ký tự"}
       required: [arxiv_url]
+
+  - name: translate
+    description: "Dịch văn bản sang một ngôn ngữ khác."
+    parameters:
+      type: object
+      properties:
+        text: {type: string, default: "", description: "Đoạn văn bản cần dịch"}
+        target_language: {type: string, default: "Vietnamese", description: "Ngôn ngữ đích để dịch sang"}
+      required: [text]
+
+  - name: youtube_summarizer
+    description: "Tóm tắt nội dung video Youtube từ link."
+    parameters:
+      type: object
+      properties:
+        url: {type: string, default: "", description: "Đường dẫn video Youtube"}
+      required: [url]

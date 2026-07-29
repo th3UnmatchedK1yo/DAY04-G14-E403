@@ -1,1 +1,3 @@
 version,author,changed_artifact,artifact_version,prompt_hash,tools_hash,reason,hypothesis,metric_name,metric_before,metric_after,run_file
+v0,HoangDuyLinh,,v0+peb1c8179815b+t6cdb53d5d7b8,peb1c8179815b,t6cdb53d5d7b8,Baseline eval,,case_accuracy,0,0.7,runs/v0_B_base_openrouter_20260729T100405654264.json
+v1,HoangDuyLinh,"system_prompt.md, tools.yaml",v1+pf2d363a02489+t0f58bdc3f7dd,pf2d363a02489,t0f58bdc3f7dd,Sửa lỗi out_of_scope và wrong_boundary; Thêm tool translate,"Quy định rõ trong prompt sẽ ngăn Agent đoán mò URL/handle và hỏi ý kiến trước khi gửi tin nhắn",case_accuracy,0.7,0.85,runs/v1_B_base_openrouter_20260729T104221932572.json
